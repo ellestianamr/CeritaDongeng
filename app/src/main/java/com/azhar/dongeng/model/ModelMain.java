@@ -14,8 +14,17 @@ import java.util.Comparator;
 
 public class ModelMain implements Serializable {
 
+    Integer id;
     String strJudul;
     String strCerita;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getStrJudul() {
         return strJudul;

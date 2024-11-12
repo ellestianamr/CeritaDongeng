@@ -1,0 +1,122 @@
+[
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_bg_shape.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/bg_shape.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/layout_list_item_main.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/layout/list_item_main.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/font_next_sunday.otf.flat",
+        "source": "com.azhar.dongeng.app-main-31:/font/next_sunday.otf"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_logo.png.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_logo.png"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_back.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_back.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/layout_toolbar.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/layout/toolbar.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-anydpi-v33_ic_launcher.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-anydpi-v33/ic_launcher.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/layout_activity_detail.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/layout/activity_detail.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_bg_half_rounded.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/bg_half_rounded.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/xml_backup_rules.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_icon_list.png.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_icon_list.png"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_bg_rounded.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/bg_rounded.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/layout_activity_main.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable-anydpi-v24_ic_launcher_foreground.xml.flat",
+        "source": "com.azhar.dongeng.app-pngs-24:/drawable-anydpi-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_search.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_search.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/xml_data_extraction_rules.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.azhar.dongeng.app-main-31:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.azhar.dongeng.app-merged_res-29:/drawable_ic_arrow.xml.flat",
+        "source": "com.azhar.dongeng.app-main-31:/drawable/ic_arrow.xml"
+    }
+]

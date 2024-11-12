@@ -1,10 +1,9 @@
 package com.azhar.dongeng.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import static com.azhar.dongeng.utils.Constant.PREFS_NAME;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,12 +11,19 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.azhar.dongeng.R;
 import com.azhar.dongeng.adapter.MainAdapter;
 import com.azhar.dongeng.model.ModelMain;
+import com.azhar.dongeng.utils.SharedPreference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     MainAdapter mainAdapter;
     RecyclerView rvListDongeng;
     SearchView searchTanaman;
+    ImageView btnFavorite, btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         rvListDongeng = findViewById(R.id.rvListDongeng);
         searchTanaman = findViewById(R.id.searchTanaman);
+        btnFavorite = findViewById(R.id.iv_favorite);
+        btnLogout = findViewById(R.id.iv_logout);
 
         //transparent background searchview
         int searchPlateId = searchTanaman.getContext()
@@ -83,6 +92,29 @@ public class MainActivity extends AppCompatActivity {
 
         //get data json
         getDataDongeng();
+
+        btnFavorite.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, FavoriteActivity.class)));
+
+        btnLogout.setOnClickListener(view -> showLogoutDialog());
+
+        SharedPreference.INSTANCE.initPref(MainActivity.this, PREFS_NAME);
+    }
+
+    private void showLogoutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Logout");
+        builder.setMessage("Are you sure you want to logout?");
+
+        builder.setPositiveButton("Ya", (dialogInterface, i) -> {
+            SharedPreference.INSTANCE.logout(MainActivity.this);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        });
+
+        builder.setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss());
+
+        builder.show();
     }
 
     private void getDataDongeng() {
