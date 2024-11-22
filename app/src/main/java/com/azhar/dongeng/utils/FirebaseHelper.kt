@@ -273,10 +273,12 @@ class FirebaseHelper {
     }
 
     fun removeFavorite(
+        idStory: String,
         idUser: String,
         callback: FavoriteCallback
     ) {
         db.collection("favorite")
+            .whereEqualTo("id", idStory)
             .whereEqualTo("idUser", idUser)
             .get()
             .addOnSuccessListener { querySnapshot ->

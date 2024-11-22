@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        db.removeFavorite(idUser, new FavoriteCallback() {
+                        db.removeFavorite(idStory, idUser, new FavoriteCallback() {
                             @Override
                             public void onComplete(boolean isFavorite) {
                                 if (isFavorite) {
@@ -131,7 +131,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                         });
                     } else {
-                        db.removeFavorite(idUser, new FavoriteCallback() {
+                        db.removeFavorite(idStory, idUser, new FavoriteCallback() {
                             @Override
                             public void onComplete(boolean isFavorite) {
                                 if (isFavorite) {
