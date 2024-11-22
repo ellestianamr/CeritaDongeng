@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f2f5f2"
+    tools:context=".activities.AddActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_rounded_orange"
+        app:layout_constraintBottom_toTopOf="@id/linear_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:navigationIcon="@drawable/ic_back" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            style="@style/headerTextPrimary"
+            android:layout_marginTop="@dimen/loginViewsMargin"
+            android:text="Tambah Cerita Dongeng" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputTitle"
+            style="@style/parent"
+            android:layout_marginTop="@dimen/loginViewsMargin">
+
+            <EditText
+                android:id="@+id/editTextTitle"
+                style="@style/modifiedEditText"
+                android:hint="Judul"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputFile"
+            style="@style/parent"
+            android:layout_marginTop="@dimen/loginViewsMargin">
+
+            <EditText
+                android:id="@+id/editTextFile"
+                style="@style/modifiedEditText"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:gravity="top"
+                android:hint="Cerita"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:text="Simpan" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/add_progress_bar"
+        style="@android:style/Widget.Material.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/orange"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

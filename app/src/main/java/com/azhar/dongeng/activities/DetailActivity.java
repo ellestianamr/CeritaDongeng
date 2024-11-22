@@ -1,10 +1,7 @@
 package com.azhar.dongeng.activities;
 
-import static com.azhar.dongeng.db.DatabaseContract.FavoriteColumns.TABLE_NAME;
-
 import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,32 +17,33 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.azhar.dongeng.R;
-import com.azhar.dongeng.db.DatabaseContract;
-import com.azhar.dongeng.db.DatabaseHelper;
-import com.azhar.dongeng.db.FavoriteHelper;
 import com.azhar.dongeng.model.ModelMain;
+import com.azhar.dongeng.utils.Constant;
+import com.azhar.dongeng.utils.FavoriteCallback;
+import com.azhar.dongeng.utils.FirebaseHelper;
+import com.azhar.dongeng.utils.SharedPreference;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
     public static final String DETAIL_DONGENG = "DETAIL_DONGENG";
-    String strJudul, strCerita;
+    String idUser, idStory, strJudul, strCerita;
     ModelMain modelMain;
     Toolbar toolbar;
     TextView tvJudul, tvCerita;
 
     MaterialFavoriteButton btnFavorite;
 
-    ArrayList<ModelMain> listFavorite = new ArrayList<>();
-    private FavoriteHelper favoriteHelper;
+    private FirebaseHelper db;
+    SharedPreferences sharedPref;
+    Boolean isLike = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        db = new FirebaseHelper();
+        sharedPref = SharedPreference.INSTANCE.initPref(getApplicationContext(), Constant.PREFS_NAME);
 
         //set transparent statusbar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -71,6 +69,7 @@ public class DetailActivity extends AppCompatActivity {
         //get data intent
         modelMain = (ModelMain) getIntent().getSerializableExtra(DETAIL_DONGENG);
         if (modelMain != null) {
+            idStory = modelMain.getId();
             strJudul = modelMain.getStrJudul();
             strCerita = modelMain.getStrCerita();
 
@@ -82,68 +81,70 @@ public class DetailActivity extends AppCompatActivity {
                 tvCerita.setText(Html.fromHtml(strCerita));
             }
         }
-
-        favoriteHelper = FavoriteHelper.Companion.getInstance(DetailActivity.this);
-        try {
-            favoriteHelper.open();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        idUser = sharedPref.getString(Constant.KEY_ID, "");
 
         dataFavorite();
     }
 
     private void dataFavorite() {
-        if (favoriteExist(strJudul)) {
-            btnFavorite.setFavorite(true);
-            btnFavorite.setOnFavoriteChangeListener((buttonView, favorite) -> {
-                if (favorite) {
-                    listFavorite = favoriteHelper.queryAll();
-                    favoriteHelper.insert(modelMain);
-                    Toast.makeText(getApplicationContext(), "Added Favorite", Toast.LENGTH_SHORT).show();
-                } else {
-                    listFavorite = favoriteHelper.queryAll();
-                    favoriteHelper.delete(strJudul);
-                    Toast.makeText(getApplicationContext(), "Deleted Favorite", Toast.LENGTH_SHORT).show();
-                }
-                favoriteHelper.close();
-            });
-        } else {
-            btnFavorite.setOnFavoriteChangeListener((buttonView, favorite) -> {
-                if (favorite) {
-                    listFavorite = favoriteHelper.queryAll();
-                    favoriteHelper.insert(modelMain);
-                    Toast.makeText(getApplicationContext(), "Added Favorite", Toast.LENGTH_SHORT).show();
-                } else {
-                    listFavorite = favoriteHelper.queryAll();
-                    favoriteHelper.delete(strJudul);
-                    Toast.makeText(getApplicationContext(), "Deleted Favorite", Toast.LENGTH_SHORT).show();
-                }
-                favoriteHelper.close();
-            });
-        }
-    }
-
-    private boolean favoriteExist(String title) {
-        String choose = DatabaseContract.FavoriteColumns.TITLE + " = ?";
-        String[] chooseArg = new String[]{title};
-        String limit = "1";
-
-        favoriteHelper = new FavoriteHelper(this);
-        try {
-            favoriteHelper.open();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        DatabaseHelper dataBaseHelper = new DatabaseHelper(this);
-        SQLiteDatabase database = dataBaseHelper.getWritableDatabase();
-        Cursor cursor = database.query(TABLE_NAME, null, choose, chooseArg, null, null, null, limit);
-        boolean exists = cursor.getCount() > 0;
-        cursor.close();
-
-        database.close();
-        return exists;
+        db.favoriteExist(idStory, idUser, isFavorite -> {
+            if (isFavorite) {
+                System.out.println("Story sudah difavoritkan oleh user ini.");
+                btnFavorite.setFavorite(true);
+                btnFavorite.setOnFavoriteChangeListener((buttonView, favorite) -> {
+                    if (favorite) {
+                        db.addFavorite(idStory, strJudul, strCerita, idUser, new FavoriteCallback() {
+                            @Override
+                            public void onComplete(boolean isFavorite) {
+                                if (isFavorite) {
+                                    Toast.makeText(getApplicationContext(), "Added Favorite", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Failed Added Favorite", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } else {
+                        db.removeFavorite(idUser, new FavoriteCallback() {
+                            @Override
+                            public void onComplete(boolean isFavorite) {
+                                if (isFavorite) {
+                                    Toast.makeText(getApplicationContext(), "Deleted Favorite", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Failed Deleted Favorite", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                System.out.println("Story belum difavoritkan oleh user ini.");
+                btnFavorite.setOnFavoriteChangeListener((buttonView, favorite) -> {
+                    if (favorite) {
+                        db.addFavorite(idStory, strJudul, strCerita, idUser, new FavoriteCallback() {
+                            @Override
+                            public void onComplete(boolean isFavorite) {
+                                if (isFavorite) {
+                                    Toast.makeText(getApplicationContext(), "Added Favorite", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Failed Added Favorite", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } else {
+                        db.removeFavorite(idUser, new FavoriteCallback() {
+                            @Override
+                            public void onComplete(boolean isFavorite) {
+                                if (isFavorite) {
+                                    Toast.makeText(getApplicationContext(), "Deleted Favorite", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Failed Deleted Favorite", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
     }
 
     @Override

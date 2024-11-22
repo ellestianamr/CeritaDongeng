@@ -1,9 +1,11 @@
 package com.azhar.dongeng.utils
 
+import com.azhar.dongeng.model.ModelMain
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import java.util.UUID
 
 class FirebaseHelper {
 
@@ -13,10 +15,8 @@ class FirebaseHelper {
         collection: String,
         email: String,
         password: String,
-        onResult: (Boolean, String?) -> Unit
+        onResult: (Boolean, String?, String?, String?) -> Unit
     ) {
-        val db = FirebaseFirestore.getInstance()
-
         db.collection(collection)
             .whereEqualTo("email", email)
             .get()
@@ -27,16 +27,21 @@ class FirebaseHelper {
                     val storedPassword = userDocument.getString("password")
 
                     if (storedPassword == password) {
-                        onResult(true, "Login successful")
+                        onResult(
+                            true,
+                            "Login successful",
+                            userDocument.getString("id"),
+                            userDocument.getString("name")
+                        )
                     } else {
-                        onResult(false, "Incorrect password")
+                        onResult(false, "Incorrect password", null, null)
                     }
                 } else {
-                    onResult(false, "Email not registered!")
+                    onResult(false, "Email not registered!", null, null)
                 }
             }
             .addOnFailureListener { exception ->
-                onResult(false, "Error logging in: ${exception.message}")
+                onResult(false, "Error logging in: ${exception.message}", null, null)
             }
     }
 
@@ -194,4 +199,154 @@ class FirebaseHelper {
                 callback(null) // Gagal
             }
     }
+
+    // new
+    fun insertDataToFirebase(title: String, story: String, callback: (Boolean, String?) -> Unit) {
+        val id = UUID.randomUUID().toString()
+
+        val data = mapOf(
+            "id" to id,
+            "strJudul" to title,
+            "strCerita" to story
+        )
+
+        db.collection("dongeng")
+            .document(id)
+            .set(data)
+            .addOnSuccessListener {
+                callback(true, "Data berhasil ditambahkan!")
+            }
+            .addOnFailureListener { e ->
+                callback(false, "Gagal menambahkan data: ${e.message}")
+            }
+    }
+
+    fun getAllDataFromFirebase(
+        callback: FirebaseCallback?
+    ) {
+        if (callback == null) {
+            println("Callback is null!")
+            return
+        }
+        db.collection("dongeng")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val dataList = mutableListOf<ModelMain>()
+                for (document in querySnapshot.documents) {
+                    val data = document.toObject(ModelMain::class.java)
+                    if (data != null) {
+                        dataList.add(data)
+                    }
+                }
+                callback.onComplete(true, dataList)
+            }
+            .addOnFailureListener { e ->
+                println("Gagal mengambil data: ${e.message}")
+                callback.onComplete(false, null)
+            }
+    }
+
+    fun addFavorite(
+        id: String,
+        title: String,
+        story: String,
+        idUser: String,
+        callback: FavoriteCallback
+    ) {
+        val data = mapOf(
+            "id" to id,
+            "strJudul" to title,
+            "strCerita" to story,
+            "idUser" to idUser
+        )
+
+        db.collection("favorite")
+            .document(id)
+            .set(data)
+            .addOnSuccessListener {
+                callback.onComplete(true)
+            }
+            .addOnFailureListener { e ->
+                println("addFavorite: ${e.message}")
+                callback.onComplete(false)
+            }
+    }
+
+    fun removeFavorite(
+        idUser: String,
+        callback: FavoriteCallback
+    ) {
+        db.collection("favorite")
+            .whereEqualTo("idUser", idUser)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    for (document in querySnapshot.documents) {
+                        document.reference.delete()
+                    }
+                    callback.onComplete(true)
+                } else {
+                    callback.onComplete(false)
+                }
+            }
+            .addOnFailureListener { e ->
+                println("removeFavorite: ${e.message}")
+                callback.onComplete(false)
+            }
+    }
+
+    fun favoriteExist(
+        idStory: String,
+        idUser: String,
+        callback: FavoriteCallback
+    ) {
+        db.collection("favorite")
+            .whereEqualTo("id", idStory)
+            .whereEqualTo("idUser", idUser)
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val exists = task.result != null && !task.result.isEmpty
+                    callback.onComplete(exists)
+                } else {
+                    println("favoriteExist: " + task.exception?.message)
+                    callback.onComplete(false)
+                }
+            }
+            .addOnFailureListener { e ->
+                println("favoriteExist: ${e.message}")
+                callback.onComplete(false)
+            }
+    }
+
+    fun getAllDataFavorite(
+        idUser: String,
+        callback: (Boolean, MutableList<ModelMain>?) -> Unit
+    ) {
+        db.collection("favorite")
+            .whereEqualTo("idUser", idUser)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val dataList = mutableListOf<ModelMain>()
+                for (document in querySnapshot.documents) {
+                    val data = document.toObject(ModelMain::class.java)
+                    if (data != null) {
+                        dataList.add(data)
+                    }
+                }
+                callback(true, dataList)
+            }
+            .addOnFailureListener { e ->
+                println("getAllDataFavorite: ${e.message}")
+                callback(false, null)
+            }
+    }
+}
+
+interface FirebaseCallback {
+    fun onComplete(success: Boolean, dataList: MutableList<ModelMain>?)
+}
+
+interface FavoriteCallback {
+    fun onComplete(isFavorite: Boolean)
 }

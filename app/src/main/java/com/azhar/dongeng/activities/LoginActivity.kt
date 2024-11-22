@@ -11,7 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.azhar.dongeng.R
 import com.azhar.dongeng.utils.Constant.COLLECTION_DATABASE
+import com.azhar.dongeng.utils.Constant.KEY_ID
 import com.azhar.dongeng.utils.Constant.KEY_LOGIN
+import com.azhar.dongeng.utils.Constant.KEY_NAME
 import com.azhar.dongeng.utils.Constant.PREFS_NAME
 import com.azhar.dongeng.utils.FirebaseHelper
 import com.azhar.dongeng.utils.SharedPreference
@@ -50,10 +52,12 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Data cannot be empty", Toast.LENGTH_SHORT).show()
         } else {
             showLoading(true)
-            db.loginUser(COLLECTION_DATABASE, email, password) { success, message ->
+            db.loginUser(COLLECTION_DATABASE, email, password) { success, message, id, name ->
                 if (success) {
                     SharedPreference.apply {
                         setBooleanPref(KEY_LOGIN, true, applicationContext)
+                        setStringPref(KEY_ID, id.toString(), applicationContext)
+                        setStringPref(KEY_NAME, name.toString(), applicationContext)
                     }
                     showLoading(false)
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

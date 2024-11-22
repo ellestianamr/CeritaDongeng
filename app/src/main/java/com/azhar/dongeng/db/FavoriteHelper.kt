@@ -44,7 +44,7 @@ class FavoriteHelper(context: Context) {
         if (cursor.count > 0) {
             do {
                 listFav = ModelMain()
-                listFav.id = cursor.getInt(cursor.getColumnIndexOrThrow(ID))
+                listFav.id = cursor.getInt(cursor.getColumnIndexOrThrow(ID)).toString()
                 listFav.strJudul = cursor.getString(cursor.getColumnIndexOrThrow(TITLE))
                 listFav.strCerita = cursor.getString(cursor.getColumnIndexOrThrow(FILE))
                 arrayList.add(listFav)

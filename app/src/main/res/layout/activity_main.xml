@@ -81,4 +81,30 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_add"
+        android:visibility="gone"
+        app:fabSize="normal"
+        app:tint="@color/white" />
+
+    <ProgressBar
+        android:id="@+id/main_progress_bar"
+        style="@android:style/Widget.Material.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/orange"
+        android:visibility="gone" />
+
 </RelativeLayout>

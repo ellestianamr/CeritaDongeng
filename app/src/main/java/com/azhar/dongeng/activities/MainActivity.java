@@ -1,9 +1,11 @@
 package com.azhar.dongeng.activities;
 
+import static com.azhar.dongeng.utils.Constant.KEY_NAME;
 import static com.azhar.dongeng.utils.Constant.PREFS_NAME;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +14,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.azhar.dongeng.R;
 import com.azhar.dongeng.adapter.MainAdapter;
 import com.azhar.dongeng.model.ModelMain;
+import com.azhar.dongeng.utils.FirebaseCallback;
+import com.azhar.dongeng.utils.FirebaseHelper;
 import com.azhar.dongeng.utils.SharedPreference;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,11 +50,18 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView rvListDongeng;
     SearchView searchTanaman;
     ImageView btnFavorite, btnLogout;
+    FloatingActionButton btnAdd;
+    ProgressBar progressBar;
+    TextView tvName;
+    FirebaseHelper db;
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new FirebaseHelper();
+        sharedPref = SharedPreference.INSTANCE.initPref(getApplicationContext(), PREFS_NAME);
 
         //set transparent statusbar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -64,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         searchTanaman = findViewById(R.id.searchTanaman);
         btnFavorite = findViewById(R.id.iv_favorite);
         btnLogout = findViewById(R.id.iv_logout);
+        btnAdd = findViewById(R.id.btn_add);
+        progressBar = findViewById(R.id.main_progress_bar);
+        tvName = findViewById(R.id.name_user);
 
         //transparent background searchview
         int searchPlateId = searchTanaman.getContext()
@@ -91,13 +108,26 @@ public class MainActivity extends AppCompatActivity {
         rvListDongeng.setHasFixedSize(true);
 
         //get data json
-        getDataDongeng();
+        //getDataDongeng();
+        getDataDongeng1();
 
         btnFavorite.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, FavoriteActivity.class)));
 
         btnLogout.setOnClickListener(view -> showLogoutDialog());
 
-        SharedPreference.INSTANCE.initPref(MainActivity.this, PREFS_NAME);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, AddActivity.class));
+            }
+        });
+
+        String name = sharedPref.getString(KEY_NAME, "");
+        System.out.println(name);
+        if (name.equalsIgnoreCase("admin")) {
+            btnAdd.setVisibility(View.VISIBLE);
+        }
+        tvName.setText(String.format("Hi, %s", name));
     }
 
     private void showLogoutDialog() {
@@ -148,6 +178,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void getDataDongeng1() {
+        showLoading(true);
+        db.getAllDataFromFirebase(new FirebaseCallback() {
+            @Override
+            public void onComplete(boolean success, List<ModelMain> dataList) {
+                if (success && dataList != null) {
+                    showLoading(false);
+                    modelMain.addAll(dataList);
+                    mainAdapter = new MainAdapter(MainActivity.this, modelMain);
+                    rvListDongeng.setAdapter(mainAdapter);
+                    Collections.sort(modelMain, ModelMain.sortByAsc);
+                    mainAdapter.notifyDataSetChanged();
+                } else {
+                    showLoading(false);
+                    Toast.makeText(MainActivity.this, "Gagal mengambil data dari Firebase", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     public static void setWindowFlag(Activity activity, final int bits, boolean on) {
         Window window = activity.getWindow();
         WindowManager.LayoutParams layoutParams = window.getAttributes();
@@ -157,6 +207,14 @@ public class MainActivity extends AppCompatActivity {
             layoutParams.flags &= ~bits;
         }
         window.setAttributes(layoutParams);
+    }
+
+    private void showLoading(Boolean isLoading) {
+        if (isLoading) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
 }

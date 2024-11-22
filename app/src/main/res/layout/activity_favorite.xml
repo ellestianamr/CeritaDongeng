@@ -53,4 +53,16 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <ProgressBar
+        android:id="@+id/fav_progress_bar"
+        style="@android:style/Widget.Material.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/orange"
+        android:visibility="gone" />
+
 </RelativeLayout>

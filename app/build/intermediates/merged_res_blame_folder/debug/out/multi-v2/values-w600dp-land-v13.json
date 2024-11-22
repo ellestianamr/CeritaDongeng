@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.azhar.dongeng.app-mergeDebugResources-27:/values-w600dp-land-v13/values-w600dp-land-v13.xml",
+            "outputFile": "com.azhar.dongeng.app-mergeDebugResources-40:/values-w600dp-land-v13/values-w600dp-land-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\ACER\\.gradle\\caches\\transforms-3\\07a4e01a884431380ccba8e44f56d04e\\transformed\\material-1.9.0\\res\\values-w600dp-land-v13\\values-w600dp-land-v13.xml",
+                    "source": "C:\\Users\\ACER\\.gradle\\caches\\transforms-3\\30df290050a5558cf22b85ec281d4d9a\\transformed\\material-1.9.0\\res\\values-w600dp-land-v13\\values-w600dp-land-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
