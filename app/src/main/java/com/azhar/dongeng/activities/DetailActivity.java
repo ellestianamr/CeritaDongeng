@@ -1,6 +1,11 @@
 package com.azhar.dongeng.activities;
 
+import static com.azhar.dongeng.utils.Constant.KEY_NAME;
+import static com.azhar.dongeng.utils.Constant.PREFS_NAME;
+
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -10,9 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -33,6 +40,7 @@ public class DetailActivity extends AppCompatActivity {
     TextView tvJudul, tvCerita;
 
     MaterialFavoriteButton btnFavorite;
+    ImageView btnEdit, btnDelete;
 
     private FirebaseHelper db;
     SharedPreferences sharedPref;
@@ -60,11 +68,21 @@ public class DetailActivity extends AppCompatActivity {
         tvJudul = findViewById(R.id.tvJudul);
         tvCerita = findViewById(R.id.tvCerita);
         btnFavorite = findViewById(R.id.btnFavorite);
+        btnEdit = findViewById(R.id.btn_edit);
+        btnDelete = findViewById(R.id.btn_delete);
 
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        SharedPreferences sharedPref = SharedPreference.INSTANCE.initPref(getApplicationContext(), PREFS_NAME);
+        String name = sharedPref.getString(KEY_NAME, "");
+        System.out.println(name);
+        if (name.equalsIgnoreCase("admin")) {
+            btnEdit.setVisibility(View.VISIBLE);
+            btnDelete.setVisibility(View.VISIBLE);
+        }
 
         //get data intent
         modelMain = (ModelMain) getIntent().getSerializableExtra(DETAIL_DONGENG);
@@ -84,6 +102,20 @@ public class DetailActivity extends AppCompatActivity {
         idUser = sharedPref.getString(Constant.KEY_ID, "");
 
         dataFavorite();
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailActivity.this, AddActivity.class);
+                intent.putExtra(DetailActivity.DETAIL_DONGENG, modelMain);
+                startActivity(intent);
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteData();
+            }
+        });
     }
 
     private void dataFavorite() {
@@ -145,6 +177,39 @@ public class DetailActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void deleteData() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Konfirmasi Hapus");
+        builder.setMessage("Apakah Anda yakin ingin menghapus data ini?");
+
+        builder.setPositiveButton("Hapus", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                db.deleteData(idStory, new FavoriteCallback() {
+                    @Override
+                    public void onComplete(boolean isDelete) {
+                        if (isDelete) {
+                            Toast.makeText(getApplicationContext(), "Data berhasil dihapus!", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            startActivity(new Intent(DetailActivity.this, MainActivity.class));
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Data gagal dihapus!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     @Override

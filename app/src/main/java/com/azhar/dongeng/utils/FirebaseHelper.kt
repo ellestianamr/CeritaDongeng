@@ -4,12 +4,18 @@ import com.azhar.dongeng.model.ModelMain
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import java.util.UUID
 
 class FirebaseHelper {
 
     private val db = FirebaseFirestore.getInstance()
+    private val collectionPath = "dongeng"
 
     fun loginUser(
         collection: String,
@@ -73,131 +79,14 @@ class FirebaseHelper {
             }
     }
 
-    // Membaca dokumen tunggal dari Firestore
-    fun getDocumentFromFirestore(
-        collection: String,
-        documentId: String,
-        callback: (DocumentSnapshot?) -> Unit
-    ) {
-        db.collection(collection).document(documentId)
-            .get()
-            .addOnSuccessListener { document ->
-                callback(document) // Sukses
-            }
-            .addOnFailureListener {
-                callback(null) // Gagal
-            }
-    }
+    private fun formatDateTime(): String {
+        val timezone = TimeZone.getTimeZone("UTC+7")
 
-    // Membaca semua dokumen dari koleksi di Firestore
-    fun getAllDocumentsFromFirestore(collection: String, callback: (QuerySnapshot?) -> Unit) {
-        db.collection(collection)
-            .get()
-            .addOnSuccessListener { result ->
-                callback(result) // Sukses
-            }
-            .addOnFailureListener {
-                callback(null) // Gagal
-            }
-    }
+        val dateFormat = SimpleDateFormat("MMMM dd, yyyy 'at' hh:mm:ss a z", Locale.ENGLISH)
+        dateFormat.timeZone = timezone
 
-    // Mengupdate data di Firestore
-    fun updateDocumentInFirestore(
-        collection: String,
-        documentId: String,
-        data: Map<String, Any>,
-        callback: (Boolean) -> Unit
-    ) {
-        db.collection(collection).document(documentId)
-            .update(data)
-            .addOnSuccessListener {
-                callback(true) // Sukses
-            }
-            .addOnFailureListener {
-                callback(false) // Gagal
-            }
-    }
-
-    // Menghapus dokumen dari Firestore
-    fun deleteDocumentFromFirestore(
-        collection: String,
-        documentId: String,
-        callback: (Boolean) -> Unit
-    ) {
-        db.collection(collection).document(documentId)
-            .delete()
-            .addOnSuccessListener {
-                callback(true) // Sukses
-            }
-            .addOnFailureListener {
-                callback(false) // Gagal
-            }
-    }
-
-    // Menghapus field dari dokumen di Firestore
-    fun deleteFieldInFirestore(
-        collection: String,
-        documentId: String,
-        field: String,
-        callback: (Boolean) -> Unit
-    ) {
-        val updates = hashMapOf<String, Any>(
-            field to FieldValue.delete()
-        )
-        db.collection(collection).document(documentId)
-            .update(updates)
-            .addOnSuccessListener {
-                callback(true) // Sukses
-            }
-            .addOnFailureListener {
-                callback(false) // Gagal
-            }
-    }
-
-    // Mendengarkan perubahan pada dokumen di Firestore
-    fun listenToDocumentChanges(
-        collection: String,
-        documentId: String,
-        callback: (DocumentSnapshot?) -> Unit
-    ) {
-        db.collection(collection).document(documentId)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    callback(null) // Gagal
-                    return@addSnapshotListener
-                }
-                callback(snapshot) // Sukses
-            }
-    }
-
-    // Mendengarkan perubahan pada koleksi dokumen di Firestore
-    fun listenToCollectionChanges(collection: String, callback: (QuerySnapshot?) -> Unit) {
-        db.collection(collection)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    callback(null) // Gagal
-                    return@addSnapshotListener
-                }
-                callback(snapshots) // Sukses
-            }
-    }
-
-    // Menjalankan query untuk mengambil dokumen berdasarkan kondisi
-    fun getDocumentsWithCondition(
-        collection: String,
-        field: String,
-        value: Any,
-        callback: (QuerySnapshot?) -> Unit
-    ) {
-        db.collection(collection)
-            .whereEqualTo(field, value)
-            .get()
-            .addOnSuccessListener { result ->
-                callback(result) // Sukses
-            }
-            .addOnFailureListener {
-                callback(null) // Gagal
-            }
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
     }
 
     // new
@@ -207,7 +96,8 @@ class FirebaseHelper {
         val data = mapOf(
             "id" to id,
             "strJudul" to title,
-            "strCerita" to story
+            "strCerita" to story,
+            "date" to formatDateTime()
         )
 
         db.collection("dongeng")
@@ -221,6 +111,38 @@ class FirebaseHelper {
             }
     }
 
+    fun editData(id: String, title: String, story: String, callback: (Boolean, String?) -> Unit) {
+        val data = mapOf(
+            "id" to id,
+            "strJudul" to title,
+            "strCerita" to story,
+            "date" to formatDateTime()
+        )
+
+        db.collection(collectionPath)
+            .document(id)
+            .set(data)
+            .addOnSuccessListener {
+                callback(true, "Data berhasil diperbarui!")
+            }
+            .addOnFailureListener { e ->
+                callback(false, "Gagal memperbarui data: ${e.message}")
+            }
+    }
+
+    fun deleteData(id: String, callback: FavoriteCallback) {
+        db.collection(collectionPath)
+            .document(id)
+            .delete()
+            .addOnSuccessListener {
+                callback.onComplete(true)
+            }
+            .addOnFailureListener { e ->
+                println("Gagal menghapus data: ${e.message}")
+                callback.onComplete(false)
+            }
+    }
+
     fun getAllDataFromFirebase(
         callback: FirebaseCallback?
     ) {
@@ -228,7 +150,8 @@ class FirebaseHelper {
             println("Callback is null!")
             return
         }
-        db.collection("dongeng")
+        db.collection(collectionPath)
+            .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val dataList = mutableListOf<ModelMain>()
@@ -257,7 +180,8 @@ class FirebaseHelper {
             "id" to id,
             "strJudul" to title,
             "strCerita" to story,
-            "idUser" to idUser
+            "idUser" to idUser,
+            "date" to formatDateTime()
         )
 
         db.collection("favorite")

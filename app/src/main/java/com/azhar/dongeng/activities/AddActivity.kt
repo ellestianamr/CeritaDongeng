@@ -8,10 +8,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.azhar.dongeng.R
+import com.azhar.dongeng.model.ModelMain
+import com.azhar.dongeng.utils.Constant.KEY_NAME
+import com.azhar.dongeng.utils.Constant.PREFS_NAME
 import com.azhar.dongeng.utils.FirebaseHelper
+import com.azhar.dongeng.utils.SharedPreference
 
 class AddActivity : AppCompatActivity() {
 
@@ -19,11 +24,13 @@ class AddActivity : AppCompatActivity() {
 
     private lateinit var etTitle: EditText
     private lateinit var etFile: EditText
+    private lateinit var txtPrimary: TextView
 
     private lateinit var btnSubmit: Button
     private lateinit var progressBar: ProgressBar
 
     private val db = FirebaseHelper()
+    private var modelMain: ModelMain? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +41,23 @@ class AddActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        val i = intent
+        if (i != null) modelMain =
+            i.getSerializableExtra(DetailActivity.DETAIL_DONGENG) as ModelMain
+
         etTitle = findViewById(R.id.editTextTitle)
         etFile = findViewById(R.id.editTextFile)
         btnSubmit = findViewById(R.id.btnSubmit)
         progressBar = findViewById(R.id.add_progress_bar)
+        txtPrimary = findViewById(R.id.txt_primary)
+
+        var editData = false
+        if (modelMain != null) {
+            etTitle.setText(modelMain?.strJudul)
+            etFile.setText(modelMain?.strCerita)
+            editData = true
+            txtPrimary.text = "Edit Cerita Dongeng"
+        }
 
         btnSubmit.setOnClickListener {
             val textTitle = etTitle.text.toString().trim()
@@ -45,14 +65,28 @@ class AddActivity : AppCompatActivity() {
 
             if (textTitle.isNotEmpty() && textTitle.isNotEmpty()) {
                 showLoading(true)
-                db.insertDataToFirebase(textTitle, textStory) { success, message ->
-                    if (success) {
-                        showLoading(false)
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, MainActivity::class.java))
-                    } else {
-                        showLoading(false)
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                if (!editData) {
+                    db.insertDataToFirebase(textTitle, textStory) { success, message ->
+                        if (success) {
+                            showLoading(false)
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java))
+                        } else {
+                            showLoading(false)
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    db.editData(modelMain!!.id, textTitle, textStory) { success, message ->
+                        println(modelMain!!.id)
+                        if (success) {
+                            showLoading(false)
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, MainActivity::class.java))
+                        } else {
+                            showLoading(false)
+                            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             } else {

@@ -30,6 +30,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/txt_primary"
             style="@style/headerTextPrimary"
             android:layout_marginTop="@dimen/loginViewsMargin"
             android:text="Tambah Cerita Dongeng" />
