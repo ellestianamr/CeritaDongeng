@@ -42,8 +42,7 @@ class AddActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val i = intent
-        if (i != null) modelMain =
-            i.getSerializableExtra(DetailActivity.DETAIL_DONGENG) as ModelMain
+        if (i != null) modelMain = i?.getSerializableExtra(DetailActivity.DETAIL_DONGENG) as? ModelMain
 
         etTitle = findViewById(R.id.editTextTitle)
         etFile = findViewById(R.id.editTextFile)
